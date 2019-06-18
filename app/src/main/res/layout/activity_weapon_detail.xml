@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <!-- Parte superior: Imagen izquierda, textos derecha -->
+    <RelativeLayout android:id="@+id/llMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout  android:id="@+id/rlWeaponImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp">
+            <!-- Imagen -->
+            <ImageView android:id="@+id/ivImgArma"
+                android:layout_width="150dp"
+                android:layout_height="180dp"
+                android:src="@drawable/weapon" />
+        </RelativeLayout>
+
+        <!-- Titulo del arma -->
+
+
+        <RelativeLayout  android:id="@+id/rlWeaponName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/rlWeaponImage"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp">
+
+            <TextView android:id="@+id/tvNombreArma"
+                android:layout_marginTop="70dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textAppearance"
+                android:text="Nombre del arma"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
+
+        </RelativeLayout>
+
+        <RelativeLayout android:id="@+id/rlWeaponInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rlWeaponImage"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="5dp">
+
+            <!-- Rareza -->
+            <TextView android:id="@+id/lblRareza"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblRareza"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"/>
+
+            <TextView android:id="@+id/tvRareza"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_marginLeft="20dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rareza"/>
+
+            <ImageView android:id="@+id/ivRareza"
+                android:layout_toRightOf="@id/tvRareza"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/icon"/>
+            <!-- Fin rareza -->
+
+            <!-- Daño -->
+            <TextView android:id="@+id/lblDanho"
+                android:layout_below="@id/lblRareza"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblDanho"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"/>
+
+            <TextView android:id="@+id/tvDanho"
+                android:layout_below="@id/lblRareza"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_marginLeft="20dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Danho"/>
+            <!-- Fin daño -->
+
+            <!-- Elemento -->
+            <TextView android:id="@+id/lblElemento"
+                android:layout_below="@id/lblDanho"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblElemento"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"/>
+
+            <TextView android:id="@+id/tvElemento"
+                android:layout_below="@id/lblDanho"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_width="wrap_content"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_height="wrap_content"
+                android:text="Ammount"/>
+
+            <ImageView android:id="@+id/ivElemento"
+                android:layout_below="@id/tvDanho"
+                android:layout_toRightOf="@id/tvElemento"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/fuego"
+                android:alpha="0.4"/>
+
+            <TextView android:id="@+id/tvElementoSecundario"
+                android:layout_below="@id/lblDanho"
+                android:layout_toRightOf="@id/ivElemento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:text="Ammount"/>
+
+            <ImageView android:id="@+id/ivElementoSecundario"
+                android:layout_below="@id/tvDanho"
+                android:layout_toRightOf="@id/tvElementoSecundario"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/hielo"
+                android:alpha="0.4"/>
+            <!-- Fin elemento -->
+
+            <!-- Afinidad -->
+            <TextView android:id="@+id/lblAfinidad"
+                android:layout_below="@id/lblElemento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblAfinidad"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"/>
+
+            <TextView android:id="@+id/tvAfinidad"
+                android:layout_below="@id/lblElemento"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_marginLeft="20dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Afinidad"/>
+
+            <ImageView android:id="@+id/ivAfinidad"
+                android:layout_below="@id/lblElemento"
+                android:layout_toRightOf="@id/tvAfinidad"
+                android:layout_marginLeft="3sp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/afinidad"/>
+            <!-- Fin afinidad -->
+
+            <!-- Afilado -->
+            <TextView android:id="@+id/lblAfilado"
+                android:layout_below="@id/lblAfinidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblAfilado"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"/>
+
+            <TextView android:id="@+id/tvAfilado"
+                android:layout_below="@id/lblAfinidad"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_marginLeft="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sin implementar"
+                android:visibility="gone"/>
+
+            <ImageView android:id="@+id/ivAfilado"
+                android:layout_below="@id/lblAfinidad"
+                android:layout_toRightOf="@id/tvAfilado"
+                android:layout_marginLeft="20dp"
+                android:layout_width="180dp"
+                android:layout_height="20dp"
+                android:src="@drawable/afilado"/>
+            <!-- Fin afilado -->
+
+            <!-- Sello ancianos -->
+            <TextView android:id="@+id/lblSelloAncianos"
+                android:layout_below="@id/lblAfilado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblSelloAncianos"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"/>
+
+            <TextView android:id="@+id/tvSelloAncianos"
+                android:layout_below="@id/lblAfilado"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_marginLeft="20dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sello Ancianos"/>
+            <!-- Fin sello ancianos -->
+
+            <!-- Defensa -->
+            <TextView android:id="@+id/lblDefensa"
+                android:layout_below="@id/lblSelloAncianos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblDefensa"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"/>
+
+            <TextView android:id="@+id/tvDefensa"
+                android:layout_below="@id/lblSelloAncianos"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_marginLeft="20dp"
+                android:layout_width="wrap_content"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_height="wrap_content"
+                android:text="Defensa"/>
+
+            <ImageView android:id="@+id/ivDefensa"
+                android:layout_below="@id/lblSelloAncianos"
+                android:layout_toRightOf="@id/tvDefensa"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/defensa"/>
+            <!-- Fin defensa -->
+
+            <!-- Bonus insecto -->
+            <TextView android:id="@+id/lblBonusInsecto"
+                android:layout_below="@id/lblDefensa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblBonusInsecto"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"/>
+
+            <TextView android:id="@+id/tvBonusInsecto"
+                android:layout_below="@id/lblDefensa"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_marginLeft="20dp"
+                android:layout_width="wrap_content"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_height="wrap_content"
+                android:text="Velocidad"/>
+            <!-- Fin defensa -->
+
+            <!-- Desvio -->
+            <TextView android:id="@+id/lblDesvio"
+                android:layout_below="@id/lblBonusInsecto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblDesvio"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"/>
+
+            <TextView android:id="@+id/tvDesvio"
+                android:layout_below="@id/lblBonusInsecto"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_marginLeft="20dp"
+                android:layout_width="wrap_content"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_height="wrap_content"
+                android:text="Bajo"/>
+            <!-- Fin desvio -->
+
+            <!-- Proyectil -->
+            <TextView android:id="@+id/lblProyectil"
+                android:layout_below="@id/lblDesvio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblProyectil"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"/>
+
+            <TextView android:id="@+id/tvProyectilTipo"
+                android:layout_below="@id/lblDesvio"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_marginLeft="20dp"
+                android:layout_width="wrap_content"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_height="wrap_content"
+                android:text="Proyectil"/>
+
+            <TextView android:id="@+id/tvProyectilLvl"
+                android:layout_below="@id/lblDesvio"
+                android:layout_toRightOf="@id/tvProyectilTipo"
+                android:layout_marginLeft="3dp"
+                android:layout_width="wrap_content"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_height="wrap_content"
+                android:text="Lvl 2"/>
+            <!-- Fin proyectil -->
+
+            <!-- Municion Especial -->
+            <TextView android:id="@+id/lblMunicionEspecial"
+                android:layout_below="@id/lblProyectil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblMunicionEspecial"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"/>
+
+            <TextView android:id="@+id/tvMunicionEspecial"
+                android:layout_below="@id/lblProyectil"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_marginLeft="20dp"
+                android:layout_width="wrap_content"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_height="wrap_content"
+                android:text="Wyvernsnipe"/>
+            <!-- Fin Municion Especial -->
+
+            <!-- Huecos -->
+            <TextView android:id="@+id/lblHuecos"
+                android:layout_below="@id/lblMunicionEspecial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblHuecos"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"
+                android:visibility="visible"/>
+
+            <ImageView android:id="@+id/ivSlots1"
+                android:layout_below="@id/lblMunicionEspecial"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_marginLeft="20dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/slot0"/>
+
+            <ImageView android:id="@+id/ivSlots2"
+                android:layout_below="@id/lblMunicionEspecial"
+                android:layout_toRightOf="@id/ivSlots1"
+                android:layout_marginLeft="5dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/slot2"/>
+
+            <ImageView android:id="@+id/ivSlots3"
+                android:layout_below="@id/lblMunicionEspecial"
+                android:layout_toRightOf="@id/ivSlots2"
+                android:layout_marginLeft="5dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/slot3"/>
+            <!-- Fin huecos -->
+
+            <!-- Notas (HH solo) -->
+            <TextView android:id="@+id/lblNotas"
+                android:layout_below="@id/lblHuecos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblNotas"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"
+                android:visibility="visible"/>
+
+            <ImageView android:id="@+id/ivNotaBlanca"
+                android:layout_below="@id/lblHuecos"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_marginLeft="20dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/nota_blanca"/>
+
+            <ImageView android:id="@+id/ivNotaRoja"
+                android:layout_below="@id/lblHuecos"
+                android:layout_toRightOf="@id/ivNotaBlanca"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/nota_roja"/>
+
+            <ImageView android:id="@+id/ivNotaNaranja"
+                android:layout_below="@id/lblHuecos"
+                android:layout_toRightOf="@id/ivNotaRoja"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/nota_naranja"/>
+
+            <ImageView android:id="@+id/ivNotaAmarilla"
+                android:layout_below="@id/lblHuecos"
+                android:layout_toRightOf="@id/ivNotaNaranja"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/nota_amarilla"/>
+
+            <ImageView android:id="@+id/ivNotaVerde"
+                android:layout_below="@id/lblHuecos"
+                android:layout_toRightOf="@id/ivNotaAmarilla"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/nota_verde"/>
+
+            <ImageView android:id="@+id/ivNotaAnhil"
+                android:layout_below="@id/lblHuecos"
+                android:layout_toRightOf="@id/ivNotaVerde"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/nota_anhil"/>
+
+            <ImageView android:id="@+id/ivNotaAzul"
+                android:layout_below="@id/lblHuecos"
+                android:layout_toRightOf="@id/ivNotaAnhil"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/nota_azul"/>
+
+            <ImageView android:id="@+id/ivNotaMorada"
+                android:layout_below="@id/lblHuecos"
+                android:layout_toRightOf="@id/ivNotaAzul"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/nota_morada"/>
+            <!-- Fin notas -->
+
+            <!-- Revestimientos (arco solo) -->
+            <TextView android:id="@+id/lblRevestimiento"
+                android:layout_below="@id/lblNotas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblRevestimiento"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/textAppearance"
+                android:visibility="visible"/>
+
+            <ImageView android:id="@+id/ivRevCortoAlcance"
+                android:layout_below="@id/lblNotas"
+                android:layout_toRightOf="@id/lblRevestimiento"
+                android:layout_marginLeft="20dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/rev_cortoalcance"/>
+
+            <ImageView android:id="@+id/ivRevPoder"
+                android:layout_below="@id/lblNotas"
+                android:layout_toRightOf="@id/ivRevCortoAlcance"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/rev_poder"/>
+
+            <ImageView android:id="@+id/ivRevParalisis"
+                android:layout_below="@id/lblNotas"
+                android:layout_toRightOf="@id/ivRevPoder"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/rev_paralisis"/>
+
+            <ImageView android:id="@+id/ivRevNitro"
+                android:layout_below="@id/lblNotas"
+                android:layout_toRightOf="@id/ivRevParalisis"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/rev_nitro"/>
+
+            <ImageView android:id="@+id/ivRevSuenho"
+                android:layout_below="@id/lblNotas"
+                android:layout_toRightOf="@id/ivRevNitro"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/rev_suenho"/>
+
+            <ImageView android:id="@+id/ivRevVeneno"
+                android:layout_below="@id/lblNotas"
+                android:layout_toRightOf="@id/ivRevSuenho"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/rev_veneno"/>
+            <!-- Fin revestimientos -->
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView android:id="@+id/rvMejoras"
+        android:layout_below="@id/llMain"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        android:layout_marginTop="30dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+</RelativeLayout>

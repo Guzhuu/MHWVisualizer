@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/opSwitchImg" android:title="@string/switchImage"/>
+    <item android:id="@+id/opOrdenar" android:title="@string/ordenar"/>
+    <!-- <item android:id="@+id/opBuscar" android:title="@string/buscar"/> -->
+    <item android:id="@+id/opSalir" android:title="@string/salir"/>
+</menu>

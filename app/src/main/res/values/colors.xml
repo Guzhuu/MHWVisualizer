@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="textAppearance">#FFBB00</color>
+    <color name="colorAppNameDark">#333333</color>
+    <color name="fuego">#d85300</color>
+    <color name="agua">#1d6cc6</color>
+    <color name="trueno">#efe300</color>
+    <color name="dragon">#a311bf</color>
+    <color name="hielo">#c1eeff</color>
+    <color name="veneno">#e05ef9</color>
+    <color name="paralisis">#fff42b</color>
+    <color name="suenho">#46bab2</color>
+    <color name="nitro">#cc6f1e</color>
+    <color name="rareza1">#fcfcfc</color>
+    <color name="rareza2">#dbdbdb</color>
+    <color name="rareza3">#e2c51f</color>
+    <color name="rareza4">#22bf44</color>
+    <color name="rareza5">#9cccce</color>
+    <color name="rareza6">#215ab7</color>
+    <color name="rareza7">#7f0ba3</color>
+    <color name="rareza8">#e08318</color>
+    <color name="rarezaX">#c60000</color>
+    <color name="elementoculto">#555555</color>
+    <color name="border_weapon_little">#999999</color>
+    <color name="afiladorojo">#c60000</color>
+    <color name="afiladonaranja">#d85300</color>
+    <color name="afiladoamarillo">#e2c51f</color>
+    <color name="afiladoverde">#22bf44</color>
+    <color name="afiladoazul">#215ab7</color>
+    <color name="afiladoblanco">#fcfcfc</color>
+    <color name="afiladonegro">#000000</color>
+</resources>
