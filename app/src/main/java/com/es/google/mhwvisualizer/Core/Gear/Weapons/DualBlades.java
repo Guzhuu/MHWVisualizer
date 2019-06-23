@@ -7,6 +7,7 @@ import java.util.Map;
 public class DualBlades extends Weapon {
     //Cantidad de afilado para rojo-naranja-amarillo-verde-azul-blanco-morado sobre 100
     public Map<Integer, Integer> afilado;
+    public Map<Integer, Integer> afiladoMax;
 
     //Existe un arma única con 2 elementos
     public String elem2;
@@ -51,6 +52,14 @@ public class DualBlades extends Weapon {
 
     public void setAfilado(Map<Integer, Integer> afilado){
         this.afilado = afilado;
+    }
+
+    public Map<Integer, Integer> getAfiladoMax(){
+        return this.afiladoMax;
+    }
+
+    public void setAfiladoMax(Map<Integer, Integer> afiladoMax){
+        this.afiladoMax = afiladoMax;
     }
 
     public String getElem2(){

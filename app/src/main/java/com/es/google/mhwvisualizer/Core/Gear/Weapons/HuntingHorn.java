@@ -10,6 +10,7 @@ public class HuntingHorn extends Weapon {
     public List<String> notas;
     //Cantidad de afilado para rojo-naranja-amarillo-verde-azul-blanco-morado sobre 100
     public Map<Integer, Integer> afilado;
+    public Map<Integer, Integer> afiladoMax;
 
     public HuntingHorn(){
         super();
@@ -42,6 +43,15 @@ public class HuntingHorn extends Weapon {
     public void setAfilado(Map<Integer, Integer> afilado){
         this.afilado = afilado;
     }
+
+    public Map<Integer, Integer> getAfiladoMax(){
+        return this.afiladoMax;
+    }
+
+    public void setAfiladoMax(Map<Integer, Integer> afiladoMax){
+        this.afiladoMax = afiladoMax;
+    }
+
     public List<String> getNotas() {
         if(this.notas == null){
             return new LinkedList<>();

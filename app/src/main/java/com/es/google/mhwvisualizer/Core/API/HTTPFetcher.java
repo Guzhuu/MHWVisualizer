@@ -44,8 +44,8 @@ public class HTTPFetcher extends AsyncTask<URL, Void, Boolean> {
                 // Connection
                 Log.d( LOG_TAG, " in doInBackground(): connecting" );
                 HttpURLConnection conn = (HttpURLConnection) urls[ 0 ].openConnection();
-                conn.setReadTimeout( 1000 /* milliseconds */ );
-                conn.setConnectTimeout( 5000 /* milliseconds */ );
+                conn.setReadTimeout( 10000 /* milliseconds */ );
+                conn.setConnectTimeout( 15000 /* milliseconds */ );
                 conn.setRequestMethod( "GET" );
                 conn.setDoInput( true );
 

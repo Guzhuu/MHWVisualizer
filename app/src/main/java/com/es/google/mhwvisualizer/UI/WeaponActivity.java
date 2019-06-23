@@ -88,6 +88,7 @@ public class WeaponActivity extends AppCompatActivity implements WeaponLittleAda
     private TextView tvAfinidad;
     private TextView lblAfilado;
     private ImageView ivAfilado;
+    private ImageView ivAfiladoMax;
     private TextView tvSelloAncianos;
     private TextView tvDefensa;
     private TextView lblBonusInsecto;
@@ -141,6 +142,7 @@ public class WeaponActivity extends AppCompatActivity implements WeaponLittleAda
         tvAfinidad = findViewById(R.id.tvAfinidad);
         lblAfilado = findViewById(R.id.lblAfilado);
         ivAfilado = findViewById(R.id.ivAfilado);
+        ivAfiladoMax = findViewById(R.id.ivAfiladoMax);
         tvSelloAncianos = findViewById(R.id.tvSelloAncianos);
         tvDefensa = findViewById(R.id.tvDefensa);
         lblBonusInsecto = findViewById(R.id.lblBonusInsecto);
@@ -583,62 +585,77 @@ public class WeaponActivity extends AppCompatActivity implements WeaponLittleAda
     public void setAfilado(Weapon weapon){
         if(weapon != null){
             Map<Integer, Integer> afilado;
+            Map<Integer, Integer> afiladoMax;
 
             lblAfilado.setVisibility(View.VISIBLE);
             ivAfilado.setVisibility(View.VISIBLE);
+            ivAfiladoMax.setVisibility(View.VISIBLE);
             switch(weapon.getClass().getSimpleName()){
                 case CHARGEBLADE:
                     afilado = ((ChargeBlade) weapon).getAfilado();
+                    afiladoMax = ((ChargeBlade) weapon).getAfiladoMax();
                     break;
 
                 case GREATSWORD:
                     afilado = ((GreatSword) weapon).getAfilado();
+                    afiladoMax = ((GreatSword) weapon).getAfiladoMax();
                     break;
 
                 case HAMMER:
                     afilado = ((Hammer) weapon).getAfilado();
+                    afiladoMax = ((Hammer) weapon).getAfiladoMax();
                     break;
 
                 case LANCE:
                     afilado = ((Lance) weapon).getAfilado();
+                    afiladoMax = ((Lance) weapon).getAfiladoMax();
                     break;
 
                 case LONGSWORD:
                     afilado = ((LongSword) weapon).getAfilado();
+                    afiladoMax = ((LongSword) weapon).getAfiladoMax();
                     break;
 
                 case SWITCHAXE:
                     afilado = ((SwitchAxe) weapon).getAfilado();
+                    afiladoMax = ((SwitchAxe) weapon).getAfiladoMax();
                     break;
 
                 case SWORDANDSHIELD:
                     afilado = ((SwordandShield) weapon).getAfilado();
+                    afiladoMax = ((SwordandShield) weapon).getAfiladoMax();
                     break;
 
                 case DUALBLADES:
                     afilado = ((DualBlades) weapon).getAfilado();
+                    afiladoMax = ((DualBlades) weapon).getAfiladoMax();
                     break;
 
                 case GUNLANCE:
                     afilado = ((GunLance) weapon).getAfilado();
+                    afiladoMax = ((GunLance) weapon).getAfiladoMax();
                     break;
 
                 case HUNTINGHORN:
                     afilado = ((HuntingHorn) weapon).getAfilado();
+                    afiladoMax = ((HuntingHorn) weapon).getAfiladoMax();
                     break;
 
                 case INSECTGLAIVE:
                     afilado = ((InsectGlaive) weapon).getAfilado();
+                    afiladoMax = ((InsectGlaive) weapon).getAfiladoMax();
                     break;
 
                 default:
                     lblAfilado.setVisibility(View.GONE);
                     ivAfilado.setVisibility(View.GONE);
+                    ivAfiladoMax.setVisibility(View.GONE);
                     return;
             }
 
-            Log.d(LOGTAG, "Afilado de " + weapon.getID() + ": " + afilado.values().toString());
-            if(afilado.keySet().size() == 6){
+            Log.d(LOGTAG, "Afilados de " + weapon.getID() + ": " + afilado.values().toString());
+            Log.d(LOGTAG, "Afilados max de " + weapon.getID() + ": " + afiladoMax.values().toString());
+            if(afilado.keySet().size() >= 6 && afiladoMax.keySet().size() >= 6){
                 if(paintList == null || paintList.isEmpty()){
                     setPaint();
                 }
@@ -661,10 +678,26 @@ public class WeaponActivity extends AppCompatActivity implements WeaponLittleAda
                 }
 
                 ivAfilado.setImageBitmap(bmp);
+
+                bmp = Bitmap.createBitmap(width, height, conf);
+                canvas = new Canvas(bmp);
+                rect = new Rect(0,0,(int) convertDpToPixel(448f),(int) convertDpToPixel(20f));
+
+                canvas.drawRect(rect, paintList.get(6));
+                margenIzq = 0;
+                //El keyset es de 0 a 5
+                for(int i = 0; i < 6; i++){
+                    rect = new Rect(margenIzq,(int) convertDpToPixel(3f),(int) convertDpToPixel((afiladoMax.get(i)*448f)/100) + margenIzq,(int) convertDpToPixel(16f));
+                    margenIzq += (int) convertDpToPixel((afiladoMax.get(i)*448f)/100);
+                    canvas.drawRect(rect, paintList.get(i));
+                }
+
+                ivAfiladoMax.setImageBitmap(bmp);
             }
         }else{
             lblAfilado.setVisibility(View.GONE);
             ivAfilado.setVisibility(View.GONE);
+            ivAfiladoMax.setVisibility(View.GONE);
         }
     }
 

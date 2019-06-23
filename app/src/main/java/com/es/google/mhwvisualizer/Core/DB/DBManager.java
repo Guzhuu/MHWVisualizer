@@ -100,6 +100,13 @@ public class DBManager extends SQLiteOpenHelper {
     private static final String AFILADOAZUL_COLUMN= "afilado_azul";
     private static final String AFILADOBLANCO_COLUMN = "afilado_blanco";
 
+    private static final String AFILADOMAXROJO_COLUMN = "afiladomax_rojo";
+    private static final String AFILADOMAXNARANJA_COLUMN = "afiladomax_naranja";
+    private static final String AFILADOMAXAMARILLO_COLUMN= "afiladomax_amarillo";
+    private static final String AFILADOMAXVERDE_COLUMN = "afiladomax_verde";
+    private static final String AFILADOMAXAZUL_COLUMN= "afiladomax_azul";
+    private static final String AFILADOMAXBLANCO_COLUMN = "afiladomax_blanco";
+
     //Otra opción sería un vector y un array 2d
     private static Map<String, Map<String, String>> tablas = new HashMap<>();
 
@@ -262,6 +269,12 @@ public class DBManager extends SQLiteOpenHelper {
         retorno.put(AFILADOVERDE_COLUMN, "INT NOT NULL");
         retorno.put(AFILADOAZUL_COLUMN, "INT NOT NULL");
         retorno.put(AFILADOBLANCO_COLUMN, "INT NOT NULL");
+        retorno.put(AFILADOMAXROJO_COLUMN, "INT NOT NULL");
+        retorno.put(AFILADOMAXNARANJA_COLUMN, "INT NOT NULL");
+        retorno.put(AFILADOMAXAMARILLO_COLUMN, "INT NOT NULL");
+        retorno.put(AFILADOMAXVERDE_COLUMN, "INT NOT NULL");
+        retorno.put(AFILADOMAXAZUL_COLUMN, "INT NOT NULL");
+        retorno.put(AFILADOMAXBLANCO_COLUMN, "INT NOT NULL");
         return retorno;
     }
 
@@ -441,7 +454,7 @@ public class DBManager extends SQLiteOpenHelper {
         return this.getTodoFromWhere(tabla, "1");
     }
 
-    private boolean insertAfilado(int idArma, Map<Integer, Integer> afilado, String tabla){
+    private boolean insertAfilado(int idArma, Map<Integer, Integer> afilado, Map<Integer, Integer> afiladomax, String tabla){
         boolean retorno = false;
 
         SQLiteDatabase BBDD = getInstance().getWritableDatabase();
@@ -450,12 +463,19 @@ public class DBManager extends SQLiteOpenHelper {
             BBDD.beginTransaction();
             if(afilado != null && afilado.size() == 6){
                 BBDD.execSQL("INSERT INTO " + tabla + " (" + IDarmabase_COLUMN + ", " + AFILADOROJO_COLUMN + ", " + AFILADONARANJA_COLUMN + ", " +
-                        AFILADOAMARILLO_COLUMN + ", " + AFILADOVERDE_COLUMN + ", " + AFILADOAZUL_COLUMN + ", " + AFILADOBLANCO_COLUMN + ") " +
+                        AFILADOAMARILLO_COLUMN + ", " + AFILADOVERDE_COLUMN + ", " + AFILADOAZUL_COLUMN + ", " + AFILADOBLANCO_COLUMN + ", " +
+                        AFILADOMAXROJO_COLUMN + ", " + AFILADOMAXNARANJA_COLUMN + ", " + AFILADOMAXAMARILLO_COLUMN + ", " + AFILADOMAXVERDE_COLUMN + ", " +
+                        AFILADOMAXAZUL_COLUMN + ", " + AFILADOMAXBLANCO_COLUMN + ") " +
                         "VALUES ("  + idArma + ", " + afilado.get(Weapon.AFILADOROJO) + ", " + afilado.get(Weapon.AFILADONARANJA) + ", " + afilado.get(Weapon.AFILADOAMARILLO)
-                        + ", " + afilado.get(Weapon.AFILADOVERDE) + ", " + afilado.get(Weapon.AFILADOAZUL) + ", " + afilado.get(Weapon.AFILADOBLANCO) + ")");
+                        + ", " + afilado.get(Weapon.AFILADOVERDE) + ", " + afilado.get(Weapon.AFILADOAZUL) + ", " + afilado.get(Weapon.AFILADOBLANCO) + ", " +
+                        afiladomax.get(Weapon.AFILADOROJO) + ", " + afiladomax.get(Weapon.AFILADONARANJA) + ", " + afiladomax.get(Weapon.AFILADOAMARILLO)
+                        + ", " + afiladomax.get(Weapon.AFILADOVERDE) + ", " + afiladomax.get(Weapon.AFILADOAZUL) + ", " + afiladomax.get(Weapon.AFILADOBLANCO) + ")");
+                BBDD.setTransactionSuccessful();
+                retorno = true;
+            } else {
+                Log.e(LOGTAG, "El arma " + idArma + " tiene un afilado inválido: " + afilado.toString());
+                retorno = false;
             }
-            BBDD.setTransactionSuccessful();
-            retorno = true;
         } catch(SQLException exc) {
             Log.e(LOGTAG, exc.getMessage());
         } finally {
@@ -574,16 +594,19 @@ public class DBManager extends SQLiteOpenHelper {
 
         SQLiteDatabase BBDD = getInstance().getWritableDatabase();
         try{
-            if(armaInsertada && mejorasInsertadas && huecosInsertados){
+            if(armaInsertada && mejorasInsertadas && huecosInsertados) {
                 Log.d(LOGTAG, "Insertando arco");
                 BBDD.beginTransaction();
-                if(((Bow) arco).getRevestimientos() != null && !((Bow) arco).getRevestimientos().isEmpty()){
-                    for(String revestimiento : ((Bow) arco).getRevestimientos()){
+                if (((Bow) arco).getRevestimientos() != null && !((Bow) arco).getRevestimientos().isEmpty()) {
+                    for (String revestimiento : ((Bow) arco).getRevestimientos()) {
                         BBDD.execSQL("INSERT INTO BOW (" + IDarmabase_COLUMN + ", " + REVESTIMIENTO_COLUMN + ") VALUES (" + arco.getID() + ", " + DatabaseUtils.sqlEscapeString(revestimiento) + ")");
                     }
-                }
                 BBDD.setTransactionSuccessful();
                 retorno = true;
+                } else {
+                    Log.e(LOGTAG, "El arma " + arco.getID() + "tiene un argumento inválido");
+                    retorno = false;
+                }
             }
         } catch(SQLException exc) {
             Log.e(LOGTAG, exc.getMessage());
@@ -613,7 +636,7 @@ public class DBManager extends SQLiteOpenHelper {
         try{
             if(armaInsertada && mejorasInsertadas && huecosInsertados){
                 Log.d(LOGTAG, "Insertando SnS");
-                if(insertAfilado(arma.getID(), ((SwordandShield) arma).getAfilado(), SWORDANDSHIELD_TABLE)){
+                if(insertAfilado(arma.getID(), ((SwordandShield) arma).getAfilado(), ((SwordandShield) arma).getAfiladoMax(), SWORDANDSHIELD_TABLE)){
                     retorno = true;
                 }
             }
@@ -642,7 +665,7 @@ public class DBManager extends SQLiteOpenHelper {
         try{
             if(armaInsertada && mejorasInsertadas && huecosInsertados){
                 Log.d(LOGTAG, "Insertando SwitchAxe");
-                if(insertAfilado(arma.getID(), ((SwitchAxe) arma).getAfilado(), SWITCHAXE_TABLE)){
+                if(insertAfilado(arma.getID(), ((SwitchAxe) arma).getAfilado(), ((SwitchAxe) arma).getAfiladoMax(), SWITCHAXE_TABLE)){
                     retorno = true;
                 }
             }
@@ -671,7 +694,7 @@ public class DBManager extends SQLiteOpenHelper {
         try{
             if(armaInsertada && mejorasInsertadas && huecosInsertados){
                 Log.d(LOGTAG, "Insertando LS");
-                if(insertAfilado(arma.getID(), ((LongSword) arma).getAfilado(), LONGSWORD_TABLE)){
+                if(insertAfilado(arma.getID(), ((LongSword) arma).getAfilado(), ((LongSword) arma).getAfiladoMax(), LONGSWORD_TABLE)){
                     retorno = true;
                 }
             }
@@ -700,7 +723,7 @@ public class DBManager extends SQLiteOpenHelper {
         try{
             if(armaInsertada && mejorasInsertadas && huecosInsertados){
                 Log.d(LOGTAG, "Insertando Lance");
-                if(insertAfilado(arma.getID(), ((Lance) arma).getAfilado(), LANCE_TABLE)){
+                if(insertAfilado(arma.getID(), ((Lance) arma).getAfilado(), ((Lance) arma).getAfiladoMax(), LANCE_TABLE)){
                     retorno = true;
                 }
             }
@@ -729,7 +752,7 @@ public class DBManager extends SQLiteOpenHelper {
         try{
             if(armaInsertada && mejorasInsertadas && huecosInsertados){
                 Log.d(LOGTAG, "Insertando Hammer");
-                if(insertAfilado(arma.getID(), ((Hammer) arma).getAfilado(), HAMMER_TABLE)){
+                if(insertAfilado(arma.getID(), ((Hammer) arma).getAfilado(), ((Hammer) arma).getAfiladoMax(), HAMMER_TABLE)){
                     retorno = true;
                 }
             }
@@ -758,7 +781,7 @@ public class DBManager extends SQLiteOpenHelper {
         try{
             if(armaInsertada && mejorasInsertadas && huecosInsertados){
                 Log.d(LOGTAG, "Insertando GreatSword");
-                if(insertAfilado(arma.getID(), ((GreatSword) arma).getAfilado(), GREATSWORD_TABLE)){
+                if(insertAfilado(arma.getID(), ((GreatSword) arma).getAfilado(), ((GreatSword) arma).getAfiladoMax(), GREATSWORD_TABLE)){
                     retorno = true;
                 }
             }
@@ -787,7 +810,7 @@ public class DBManager extends SQLiteOpenHelper {
         try{
             if(armaInsertada && mejorasInsertadas && huecosInsertados){
                 Log.d(LOGTAG, "Insertando ChargeBlade");
-                if(insertAfilado(arma.getID(), ((ChargeBlade) arma).getAfilado(), CHARGEBLADE_TABLE)){
+                if(insertAfilado(arma.getID(), ((ChargeBlade) arma).getAfilado(), ((ChargeBlade) arma).getAfiladoMax(), CHARGEBLADE_TABLE)){
                     retorno = true;
                 }
             }
@@ -818,18 +841,25 @@ public class DBManager extends SQLiteOpenHelper {
             BBDD.beginTransaction();
             if(armaInsertada && mejorasInsertadas && huecosInsertados){
                 Log.d(LOGTAG, "Insertando GunLance");
-                if(((GunLance) arma).getAfilado() != null && ((GunLance) arma).getAfilado().size() == 6 && ((GunLance) arma).getProyectil() != null && ((GunLance) arma).getProyectil() != ""){
+                if(((GunLance) arma).getAfilado() != null && ((GunLance) arma).getAfilado().size() >= 6 && ((GunLance) arma).getProyectil() != null && ((GunLance) arma).getProyectil() != ""){
                     Map<Integer, Integer> afilado = ((GunLance) arma).getAfilado();
+                    Map<Integer, Integer> afiladomax = ((GunLance) arma).getAfiladoMax();
                     BBDD.execSQL("INSERT INTO " + GUNLANCE_TABLE + " (" + IDarmabase_COLUMN + ", " + AFILADOROJO_COLUMN + ", " + AFILADONARANJA_COLUMN + ", " +
-                            AFILADOAMARILLO_COLUMN + ", " + AFILADOVERDE_COLUMN + ", " + AFILADOAZUL_COLUMN + ", " + AFILADOBLANCO_COLUMN + ", " +
+                            AFILADOAMARILLO_COLUMN + ", " + AFILADOVERDE_COLUMN + ", " + AFILADOAZUL_COLUMN + ", " + AFILADOBLANCO_COLUMN + ", " + AFILADOMAXROJO_COLUMN + ", " +
+                            AFILADOMAXNARANJA_COLUMN + ", " + AFILADOMAXAMARILLO_COLUMN + ", " + AFILADOMAXVERDE_COLUMN + ", " + AFILADOMAXAZUL_COLUMN + ", " + AFILADOMAXBLANCO_COLUMN + ", " +
                             PROYECTILTIPO_COLUMN + ", " + PROYECTILLVL_COLUMN + ") " +
                             "VALUES ("  + arma.getID() + ", " + afilado.get(Weapon.AFILADOROJO) + ", " + afilado.get(Weapon.AFILADONARANJA) + ", " + afilado.get(Weapon.AFILADOAMARILLO)
-                            + ", " + afilado.get(Weapon.AFILADOVERDE) + ", " + afilado.get(Weapon.AFILADOAZUL) + ", " + afilado.get(Weapon.AFILADOBLANCO) +
+                            + ", " + afilado.get(Weapon.AFILADOVERDE) + ", " + afilado.get(Weapon.AFILADOAZUL) + ", " + afilado.get(Weapon.AFILADOBLANCO) + ", " +
+                            afiladomax.get(Weapon.AFILADOROJO) + ", " + afiladomax.get(Weapon.AFILADONARANJA) + ", " + afiladomax.get(Weapon.AFILADOAMARILLO)
+                            + ", " + afiladomax.get(Weapon.AFILADOVERDE) + ", " + afiladomax.get(Weapon.AFILADOAZUL) + ", " + afiladomax.get(Weapon.AFILADOBLANCO) +
                             ", " + DatabaseUtils.sqlEscapeString(((GunLance) arma).getProyectil()) + ", " + ((GunLance) arma).getLvlProyectil() + ")");
+                    BBDD.setTransactionSuccessful();
+                    retorno = true;
+                } else {
+                    Log.e(LOGTAG, "El arma " + arma.getID() + "tiene un argumento inválido");
+                    retorno = false;
                 }
             }
-            BBDD.setTransactionSuccessful();
-            retorno = true;
         } catch(SQLException exc) {
             Log.e(LOGTAG, exc.getMessage());
         }finally {
@@ -861,18 +891,25 @@ public class DBManager extends SQLiteOpenHelper {
             BBDD.beginTransaction();
             if(armaInsertada && mejorasInsertadas && huecosInsertados){
                 Log.d(LOGTAG, "Insertando DualBlades");
-                if(((DualBlades) arma).getAfilado() != null && ((DualBlades) arma).getAfilado().size() == 6){
+                if(((DualBlades) arma).getAfilado() != null && ((DualBlades) arma).getAfilado().size() >= 6){
                     Map<Integer, Integer> afilado = ((DualBlades) arma).getAfilado();
+                    Map<Integer, Integer> afiladomax = ((DualBlades) arma).getAfiladoMax();
                     BBDD.execSQL("INSERT INTO " + DUALBLADES_TABLE + " (" + IDarmabase_COLUMN + ", " + AFILADOROJO_COLUMN + ", " + AFILADONARANJA_COLUMN + ", " +
-                            AFILADOAMARILLO_COLUMN + ", " + AFILADOVERDE_COLUMN + ", " + AFILADOAZUL_COLUMN + ", " + AFILADOBLANCO_COLUMN + ", " +
+                            AFILADOAMARILLO_COLUMN + ", " + AFILADOVERDE_COLUMN + ", " + AFILADOAZUL_COLUMN + ", " + AFILADOBLANCO_COLUMN + ", " + AFILADOMAXROJO_COLUMN + ", " +
+                            AFILADOMAXNARANJA_COLUMN + ", " + AFILADOMAXAMARILLO_COLUMN + ", " + AFILADOMAXVERDE_COLUMN + ", " + AFILADOMAXAZUL_COLUMN + ", " + AFILADOMAXBLANCO_COLUMN + ", " +
                             ELEMENTOSECUNDARIO_COLUMN + ", " + ELEMENTOSECUNDARIOCANTIDAD_COLUMN + ") " +
                             "VALUES ("  + arma.getID() + ", " + afilado.get(Weapon.AFILADOROJO) + ", " + afilado.get(Weapon.AFILADONARANJA) + ", " + afilado.get(Weapon.AFILADOAMARILLO)
-                            + ", " + afilado.get(Weapon.AFILADOVERDE) + ", " + afilado.get(Weapon.AFILADOAZUL) + ", " +  afilado.get(Weapon.AFILADOBLANCO) + ", "
-                            + DatabaseUtils.sqlEscapeString(((DualBlades) arma).getElem2()) + ", " + ((DualBlades) arma).getElem2cantidad() + ")");
+                            + ", " + afilado.get(Weapon.AFILADOVERDE) + ", " + afilado.get(Weapon.AFILADOAZUL) + ", " +  afilado.get(Weapon.AFILADOBLANCO) + ", " +
+                            afiladomax.get(Weapon.AFILADOROJO) + ", " + afiladomax.get(Weapon.AFILADONARANJA) + ", " + afiladomax.get(Weapon.AFILADOAMARILLO)
+                            + ", " + afiladomax.get(Weapon.AFILADOVERDE) + ", " + afiladomax.get(Weapon.AFILADOAZUL) + ", " + afiladomax.get(Weapon.AFILADOBLANCO) +
+                            ", " + DatabaseUtils.sqlEscapeString(((DualBlades) arma).getElem2()) + ", " + ((DualBlades) arma).getElem2cantidad() + ")");
+                    BBDD.setTransactionSuccessful();
+                    retorno = true;
+                } else {
+                    Log.e(LOGTAG, "El arma " + arma.getID() + "tiene un argumento inválido");
+                    retorno = false;
                 }
             }
-            BBDD.setTransactionSuccessful();
-            retorno = true;
         } catch(SQLException exc) {
             Log.e(LOGTAG, exc.getMessage());
         }finally {
@@ -904,18 +941,25 @@ public class DBManager extends SQLiteOpenHelper {
             BBDD.beginTransaction();
             if(armaInsertada && mejorasInsertadas && huecosInsertados){
                 Log.d(LOGTAG, "Insertando InsectGlaive");
-                if(((InsectGlaive) arma).getAfilado() != null && ((InsectGlaive) arma).getAfilado().size() == 6 && ((InsectGlaive) arma).getBonusInsecto() != null && ((InsectGlaive) arma).getBonusInsecto() != ""){
+                if(((InsectGlaive) arma).getAfilado() != null && ((InsectGlaive) arma).getAfilado().size() >= 6 && ((InsectGlaive) arma).getBonusInsecto() != null && ((InsectGlaive) arma).getBonusInsecto() != ""){
                     Map<Integer, Integer> afilado = ((InsectGlaive) arma).getAfilado();
+                    Map<Integer, Integer> afiladomax = ((InsectGlaive) arma).getAfiladoMax();
                     BBDD.execSQL("INSERT INTO " + INSECTGLAIVE_TABLE + " (" + IDarmabase_COLUMN + ", " + AFILADOROJO_COLUMN + ", " + AFILADONARANJA_COLUMN + ", " +
-                            AFILADOAMARILLO_COLUMN + ", " + AFILADOVERDE_COLUMN + ", " + AFILADOAZUL_COLUMN + ", " + AFILADOBLANCO_COLUMN + ", " +
+                            AFILADOAMARILLO_COLUMN + ", " + AFILADOVERDE_COLUMN + ", " + AFILADOAZUL_COLUMN + ", " + AFILADOBLANCO_COLUMN + ", " + AFILADOMAXROJO_COLUMN + ", " +
+                            AFILADOMAXNARANJA_COLUMN + ", " + AFILADOMAXAMARILLO_COLUMN + ", " + AFILADOMAXVERDE_COLUMN + ", " + AFILADOMAXAZUL_COLUMN + ", " + AFILADOMAXBLANCO_COLUMN + ", " +
                             BONUSINSECTO_COLUMN + ") " +
                             "VALUES ("  + arma.getID() + ", " + afilado.get(Weapon.AFILADOROJO) + ", " + afilado.get(Weapon.AFILADONARANJA) + ", " + afilado.get(Weapon.AFILADOAMARILLO)
-                            + ", " + afilado.get(Weapon.AFILADOVERDE) + ", " + afilado.get(Weapon.AFILADOAZUL) + ", " + afilado.get(Weapon.AFILADOBLANCO)
-                            + ", " + DatabaseUtils.sqlEscapeString(((InsectGlaive) arma).getBonusInsecto()) + ")");
+                            + ", " + afilado.get(Weapon.AFILADOVERDE) + ", " + afilado.get(Weapon.AFILADOAZUL) + ", " + afilado.get(Weapon.AFILADOBLANCO) + ", " +
+                            afiladomax.get(Weapon.AFILADOROJO) + ", " + afiladomax.get(Weapon.AFILADONARANJA) + ", " + afiladomax.get(Weapon.AFILADOAMARILLO)
+                            + ", " + afiladomax.get(Weapon.AFILADOVERDE) + ", " + afiladomax.get(Weapon.AFILADOAZUL) + ", " + afiladomax.get(Weapon.AFILADOBLANCO) +
+                            ", " + DatabaseUtils.sqlEscapeString(((InsectGlaive) arma).getBonusInsecto()) + ")");
+                    BBDD.setTransactionSuccessful();
+                    retorno = true;
+                }else{
+                    Log.e(LOGTAG, "El arma " + arma.getID() + "tiene un argumento inválido");
+                    retorno = false;
                 }
             }
-            BBDD.setTransactionSuccessful();
-            retorno = true;
         } catch(SQLException exc) {
             Log.e(LOGTAG, exc.getMessage());
         }finally {
@@ -947,12 +991,21 @@ public class DBManager extends SQLiteOpenHelper {
             BBDD.beginTransaction();
             if(armaInsertada && mejorasInsertadas && huecosInsertados){
                 Log.d(LOGTAG, "Insertando HuntingHorn");
-                if(((HuntingHorn) arma).getAfilado() != null && ((HuntingHorn) arma).getAfilado().size() == 6) {
+                if(((HuntingHorn) arma).getAfilado() != null && ((HuntingHorn) arma).getAfilado().size() >= 6) {
                     Map<Integer, Integer> afilado = ((HuntingHorn) arma).getAfilado();
+                    Map<Integer, Integer> afiladomax = ((HuntingHorn) arma).getAfiladoMax();
                     BBDD.execSQL("INSERT INTO " + HUNTINGHORN_TABLE + " (" + IDarmabase_COLUMN + ", " + AFILADOROJO_COLUMN + ", " + AFILADONARANJA_COLUMN + ", " +
-                            AFILADOAMARILLO_COLUMN + ", " + AFILADOVERDE_COLUMN + ", " + AFILADOAZUL_COLUMN + ", " + AFILADOBLANCO_COLUMN + ") " +
+                            AFILADOAMARILLO_COLUMN + ", " + AFILADOVERDE_COLUMN + ", " + AFILADOAZUL_COLUMN + ", " + AFILADOBLANCO_COLUMN + ", " + AFILADOMAXROJO_COLUMN + ", " +
+                            AFILADOMAXNARANJA_COLUMN + ", " + AFILADOMAXAMARILLO_COLUMN + ", " + AFILADOMAXVERDE_COLUMN + ", " + AFILADOMAXAZUL_COLUMN + ", " + AFILADOMAXBLANCO_COLUMN + ") " +
                             "VALUES ("  + arma.getID() + ", " + afilado.get(Weapon.AFILADOROJO) + ", " + afilado.get(Weapon.AFILADONARANJA) + ", " + afilado.get(Weapon.AFILADOAMARILLO)
-                            + ", " + afilado.get(Weapon.AFILADOVERDE) + ", " + afilado.get(Weapon.AFILADOAZUL) + ", " + afilado.get(Weapon.AFILADOBLANCO) + ")");
+                            + ", " + afilado.get(Weapon.AFILADOVERDE) + ", " + afilado.get(Weapon.AFILADOAZUL) + ", " + afilado.get(Weapon.AFILADOBLANCO) + ", " +
+                            afiladomax.get(Weapon.AFILADOROJO) + ", " + afiladomax.get(Weapon.AFILADONARANJA) + ", " + afiladomax.get(Weapon.AFILADOAMARILLO)
+                            + ", " + afiladomax.get(Weapon.AFILADOVERDE) + ", " + afiladomax.get(Weapon.AFILADOAZUL) + ", " + afiladomax.get(Weapon.AFILADOBLANCO) + ")");
+                    BBDD.setTransactionSuccessful();
+                    retorno = true;
+                }else{
+                    Log.e(LOGTAG, "El arma " + arma.getID() + "tiene un argumento inválido");
+                    retorno = false;
                 }
                 Log.d(LOGTAG, "Notas de " + arma.getID() + ": " + ((HuntingHorn) arma).getNotas().toString());
 
@@ -963,8 +1016,6 @@ public class DBManager extends SQLiteOpenHelper {
                     }
                 }
             }
-            BBDD.setTransactionSuccessful();
-            retorno = true;
         } catch(SQLException exc) {
             Log.e(LOGTAG, exc.getMessage());
         }finally {
@@ -994,15 +1045,18 @@ public class DBManager extends SQLiteOpenHelper {
         SQLiteDatabase BBDD = getInstance().getWritableDatabase();
         try{
             BBDD.beginTransaction();
-            if(armaInsertada && mejorasInsertadas && huecosInsertados){
+            if(armaInsertada && mejorasInsertadas && huecosInsertados) {
                 Log.d(LOGTAG, "Insertando LightBowgun");
-                if(((LightBowgun) arma).getDesvio() != null && !((LightBowgun) arma).getDesvio().equals("")) {
+                if (((LightBowgun) arma).getDesvio() != null && !((LightBowgun) arma).getDesvio().equals("")) {
                     BBDD.execSQL("INSERT INTO " + LIGHTBOWGUN_TABLE + " (" + IDarmabase_COLUMN + ", " + DESVIO_COLUMN + ") " +
                             "VALUES (" + arma.getID() + ", " + DatabaseUtils.sqlEscapeString(((LightBowgun) arma).getDesvio()) + ")");
+                    BBDD.setTransactionSuccessful();
+                    retorno = true;
+                } else {
+                    Log.e(LOGTAG, "El arma " + arma.getID() + "tiene un argumento inválido");
+                    retorno = false;
                 }
             }
-            BBDD.setTransactionSuccessful();
-            retorno = true;
         } catch(SQLException exc) {
             Log.e(LOGTAG, exc.getMessage());
         }finally {
@@ -1038,10 +1092,13 @@ public class DBManager extends SQLiteOpenHelper {
                     BBDD.execSQL("INSERT INTO " + HEAVYBOWGUN_TABLE + " (" + IDarmabase_COLUMN + ", " + DESVIO_COLUMN + ", " + MUNESPECIAL_COLUMN + ") " +
                             "VALUES (" + arma.getID() + ", " + DatabaseUtils.sqlEscapeString(((HeavyBowgun) arma).getDesvio()) + ", " +
                             DatabaseUtils.sqlEscapeString(((HeavyBowgun) arma).getMunicionEspecial()) + ")");
+                    BBDD.setTransactionSuccessful();
+                    retorno = true;
+                } else {
+                    Log.e(LOGTAG, "El arma " + arma.getID() + "tiene un argumento inválido");
+                    retorno = false;
                 }
             }
-            BBDD.setTransactionSuccessful();
-            retorno = true;
         } catch(SQLException exc) {
             Log.e(LOGTAG, exc.getMessage());
         }finally {
@@ -1100,11 +1157,27 @@ public class DBManager extends SQLiteOpenHelper {
     }
 
     public Cursor getWeapons(String tipoArma){
-        Log.d(LOGTAG, "Tipo de arma consultado: " + tipoArma + ", " + SWORDANDSHIELD_TABLE);
+        Log.d(LOGTAG, "Tipo de arma consultado: " + tipoArma);
         Cursor retorno = null;
         SQLiteDatabase db = this.getReadableDatabase();
 
         if(Arrays.binarySearch(nombreTablas, tipoArma.toUpperCase()) != -1 && !tipoArma.equals(KINECTINSECT_TABLE)){
+            Log.d(LOGTAG, "Lenth1: " + db.rawQuery("SELECT * FROM " + BOW_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth2: " + db.rawQuery("SELECT * FROM " + CHARGEBLADE_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth3: " + db.rawQuery("SELECT * FROM " + DUALBLADES_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth4: " + db.rawQuery("SELECT * FROM " + GREATSWORD_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth5: " + db.rawQuery("SELECT * FROM " + GUNLANCE_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth6: " + db.rawQuery("SELECT * FROM " + HAMMER_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth7: " + db.rawQuery("SELECT * FROM " + HEAVYBOWGUN_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth8: " + db.rawQuery("SELECT * FROM " + HUECOS_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth9: " + db.rawQuery("SELECT * FROM " + HUNTINGHORN_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth10: " + db.rawQuery("SELECT * FROM " + INSECTGLAIVE_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth11: " + db.rawQuery("SELECT * FROM " + LANCE_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth12: " + db.rawQuery("SELECT * FROM " + LIGHTBOWGUN_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth13: " + db.rawQuery("SELECT * FROM " + LONGSWORD_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth14: " + db.rawQuery("SELECT * FROM " + MEJORAS_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth15: " + db.rawQuery("SELECT * FROM " + SWITCHAXE_TABLE, null).getCount());
+            Log.d(LOGTAG, "Lenth16: " + db.rawQuery("SELECT * FROM " + SWORDANDSHIELD_TABLE, null).getCount());
             retorno = db.rawQuery("SELECT * FROM WEAPON, " + tipoArma + " WHERE WEAPON." + ID_COLUMN + " = " + tipoArma + ".ID_arma_base" , null);
         }
 
@@ -1147,6 +1220,7 @@ public class DBManager extends SQLiteOpenHelper {
                         Cursor afilado = db.rawQuery("SELECT * FROM " + tipoArma + " WHERE " + tipoArma + "." + IDarmabase_COLUMN + " = " + id, null);
                         Log.d(LOGTAG, "Afilado attributes: " + Arrays.toString(afilado.getColumnNames()));
                         Map<Integer, Integer> afiladoMap = new HashMap<>();
+                        Map<Integer, Integer> afiladomaxMap = new HashMap<>();
 
                         while (afilado.moveToNext()) {
                             for (int i = 0; i < afilado.getColumnCount(); i++) {
@@ -1169,6 +1243,24 @@ public class DBManager extends SQLiteOpenHelper {
                                     case AFILADOBLANCO_COLUMN:
                                         afiladoMap.put(Weapon.AFILADOBLANCO, afilado.getInt(i));
                                         break;
+                                    case AFILADOMAXROJO_COLUMN:
+                                        afiladomaxMap.put(Weapon.AFILADOROJO, afilado.getInt(i));
+                                        break;
+                                    case AFILADOMAXNARANJA_COLUMN:
+                                        afiladomaxMap.put(Weapon.AFILADONARANJA, afilado.getInt(i));
+                                        break;
+                                    case AFILADOMAXAMARILLO_COLUMN:
+                                        afiladomaxMap.put(Weapon.AFILADOAMARILLO, afilado.getInt(i));
+                                        break;
+                                    case AFILADOMAXVERDE_COLUMN:
+                                        afiladomaxMap.put(Weapon.AFILADOVERDE, afilado.getInt(i));
+                                        break;
+                                    case AFILADOMAXAZUL_COLUMN:
+                                        afiladomaxMap.put(Weapon.AFILADOAZUL, afilado.getInt(i));
+                                        break;
+                                    case AFILADOMAXBLANCO_COLUMN:
+                                        afiladomaxMap.put(Weapon.AFILADOBLANCO, afilado.getInt(i));
+                                        break;
                                 }
                             }
                         }
@@ -1176,24 +1268,31 @@ public class DBManager extends SQLiteOpenHelper {
                         if(tipoArma.equals(CHARGEBLADE_TABLE)){
                             retorno = new ChargeBlade();
                             ((ChargeBlade) retorno).setAfilado(afiladoMap);
+                            ((ChargeBlade) retorno).setAfiladoMax(afiladomaxMap);
                         }else if(tipoArma.equals(GREATSWORD_TABLE)){
                             retorno = new GreatSword();
                             ((GreatSword) retorno).setAfilado(afiladoMap);
+                            ((GreatSword) retorno).setAfiladoMax(afiladomaxMap);
                         }else if(tipoArma.equals(HAMMER_TABLE)){
                             retorno = new Hammer();
                             ((Hammer) retorno).setAfilado(afiladoMap);
+                            ((Hammer) retorno).setAfiladoMax(afiladomaxMap);
                         }else if(tipoArma.equals(LANCE_TABLE)){
                             retorno = new Lance();
                             ((Lance) retorno).setAfilado(afiladoMap);
+                            ((Lance) retorno).setAfiladoMax(afiladomaxMap);
                         }else if(tipoArma.equals(LONGSWORD_TABLE)){
                             retorno = new LongSword();
                             ((LongSword) retorno).setAfilado(afiladoMap);
+                            ((LongSword) retorno).setAfiladoMax(afiladomaxMap);
                         }else if(tipoArma.equals(SWITCHAXE_TABLE)){
                             retorno = new SwitchAxe();
                             ((SwitchAxe) retorno).setAfilado(afiladoMap);
+                            ((SwitchAxe) retorno).setAfiladoMax(afiladomaxMap);
                         }else{ //Swordandshield
                             retorno = new SwordandShield();
                             ((SwordandShield) retorno).setAfilado(afiladoMap);
+                            ((SwordandShield) retorno).setAfiladoMax(afiladomaxMap);
                         }
 
                         break;
@@ -1203,6 +1302,7 @@ public class DBManager extends SQLiteOpenHelper {
                         Cursor dualBlade = db.rawQuery("SELECT * FROM " + tipoArma + " WHERE " + tipoArma + "." + IDarmabase_COLUMN + " = " + id, null);
                         Log.d(LOGTAG, "DualBlades attributes: " + Arrays.toString(dualBlade.getColumnNames()));
                         Map<Integer, Integer> afiladoMapDB = new HashMap<>();
+                        Map<Integer, Integer> afiladomaxMapDB = new HashMap<>();
 
                         while (dualBlade.moveToNext()) {
                             for (int i = 0; i < dualBlade.getColumnCount(); i++) {
@@ -1225,6 +1325,24 @@ public class DBManager extends SQLiteOpenHelper {
                                     case AFILADOBLANCO_COLUMN:
                                         afiladoMapDB.put(Weapon.AFILADOBLANCO, dualBlade.getInt(i));
                                         break;
+                                    case AFILADOMAXROJO_COLUMN:
+                                        afiladomaxMapDB.put(Weapon.AFILADOROJO, dualBlade.getInt(i));
+                                        break;
+                                    case AFILADOMAXNARANJA_COLUMN:
+                                        afiladomaxMapDB.put(Weapon.AFILADONARANJA, dualBlade.getInt(i));
+                                        break;
+                                    case AFILADOMAXAMARILLO_COLUMN:
+                                        afiladomaxMapDB.put(Weapon.AFILADOAMARILLO, dualBlade.getInt(i));
+                                        break;
+                                    case AFILADOMAXVERDE_COLUMN:
+                                        afiladomaxMapDB.put(Weapon.AFILADOVERDE, dualBlade.getInt(i));
+                                        break;
+                                    case AFILADOMAXAZUL_COLUMN:
+                                        afiladomaxMapDB.put(Weapon.AFILADOAZUL, dualBlade.getInt(i));
+                                        break;
+                                    case AFILADOMAXBLANCO_COLUMN:
+                                        afiladomaxMapDB.put(Weapon.AFILADOBLANCO, dualBlade.getInt(i));
+                                        break;
                                     case ELEMENTOSECUNDARIO_COLUMN:
                                         ((DualBlades) retorno).setElem2(dualBlade.getString(i));
                                         break;
@@ -1236,6 +1354,7 @@ public class DBManager extends SQLiteOpenHelper {
                         }
 
                         ((DualBlades) retorno).setAfilado(afiladoMapDB);
+                        ((DualBlades) retorno).setAfiladoMax(afiladomaxMapDB);
 
                         break;
 
@@ -1244,6 +1363,7 @@ public class DBManager extends SQLiteOpenHelper {
                         Cursor GunLance = db.rawQuery("SELECT * FROM " + tipoArma + " WHERE " + tipoArma + "." + IDarmabase_COLUMN + " = " + id, null);
                         Log.d(LOGTAG, "GunLance attributes: " + Arrays.toString(GunLance.getColumnNames()));
                         Map<Integer, Integer> afiladoMapGL = new HashMap<>();
+                        Map<Integer, Integer> afiladomaxMapGL = new HashMap<>();
 
                         while (GunLance.moveToNext()) {
                             for (int i = 0; i < GunLance.getColumnCount(); i++) {
@@ -1266,6 +1386,24 @@ public class DBManager extends SQLiteOpenHelper {
                                     case AFILADOBLANCO_COLUMN:
                                         afiladoMapGL.put(Weapon.AFILADOBLANCO, GunLance.getInt(i));
                                         break;
+                                    case AFILADOMAXROJO_COLUMN:
+                                        afiladomaxMapGL.put(Weapon.AFILADOROJO, GunLance.getInt(i));
+                                        break;
+                                    case AFILADOMAXNARANJA_COLUMN:
+                                        afiladomaxMapGL.put(Weapon.AFILADONARANJA, GunLance.getInt(i));
+                                        break;
+                                    case AFILADOMAXAMARILLO_COLUMN:
+                                        afiladomaxMapGL.put(Weapon.AFILADOAMARILLO, GunLance.getInt(i));
+                                        break;
+                                    case AFILADOMAXVERDE_COLUMN:
+                                        afiladomaxMapGL.put(Weapon.AFILADOVERDE, GunLance.getInt(i));
+                                        break;
+                                    case AFILADOMAXAZUL_COLUMN:
+                                        afiladomaxMapGL.put(Weapon.AFILADOAZUL, GunLance.getInt(i));
+                                        break;
+                                    case AFILADOMAXBLANCO_COLUMN:
+                                        afiladomaxMapGL.put(Weapon.AFILADOBLANCO, GunLance.getInt(i));
+                                        break;
                                     case PROYECTILTIPO_COLUMN:
                                         ((GunLance) retorno).setProyectil(GunLance.getString(i));
                                         break;
@@ -1276,6 +1414,7 @@ public class DBManager extends SQLiteOpenHelper {
                             }
                         }
                         ((GunLance) retorno).setAfilado(afiladoMapGL);
+                        ((GunLance) retorno).setAfiladoMax(afiladomaxMapGL);
                         break;
 
                     case HEAVYBOWGUN_TABLE:
@@ -1304,6 +1443,7 @@ public class DBManager extends SQLiteOpenHelper {
                         Cursor Notas = db.rawQuery("SELECT * FROM " + HUNTINGHORNNOTES_TABLE + " WHERE " + HUNTINGHORNNOTES_TABLE + "." + IDHH_COLUMN + " = " + id, null);
                         Log.d(LOGTAG, "HuntingHorn attributes: " + Arrays.toString(HuntingHorn.getColumnNames()));
                         Map<Integer, Integer> afiladoMapHH = new HashMap<>();
+                        Map<Integer, Integer> afiladomaxMapHH = new HashMap<>();
 
                         while (HuntingHorn.moveToNext()) {
                             for (int i = 0; i < HuntingHorn.getColumnCount(); i++) {
@@ -1326,6 +1466,24 @@ public class DBManager extends SQLiteOpenHelper {
                                     case AFILADOBLANCO_COLUMN:
                                         afiladoMapHH.put(Weapon.AFILADOBLANCO, HuntingHorn.getInt(i));
                                         break;
+                                    case AFILADOMAXROJO_COLUMN:
+                                        afiladomaxMapHH.put(Weapon.AFILADOROJO, HuntingHorn.getInt(i));
+                                        break;
+                                    case AFILADOMAXNARANJA_COLUMN:
+                                        afiladomaxMapHH.put(Weapon.AFILADONARANJA, HuntingHorn.getInt(i));
+                                        break;
+                                    case AFILADOMAXAMARILLO_COLUMN:
+                                        afiladomaxMapHH.put(Weapon.AFILADOAMARILLO, HuntingHorn.getInt(i));
+                                        break;
+                                    case AFILADOMAXVERDE_COLUMN:
+                                        afiladomaxMapHH.put(Weapon.AFILADOVERDE, HuntingHorn.getInt(i));
+                                        break;
+                                    case AFILADOMAXAZUL_COLUMN:
+                                        afiladomaxMapHH.put(Weapon.AFILADOAZUL, HuntingHorn.getInt(i));
+                                        break;
+                                    case AFILADOMAXBLANCO_COLUMN:
+                                        afiladomaxMapHH.put(Weapon.AFILADOBLANCO, HuntingHorn.getInt(i));
+                                        break;
                                 }
                             }
                         }
@@ -1344,6 +1502,7 @@ public class DBManager extends SQLiteOpenHelper {
                         }
 
                         ((HuntingHorn) retorno).setAfilado(afiladoMapHH);
+                        ((HuntingHorn) retorno).setAfiladoMax(afiladomaxMapHH);
                         ((HuntingHorn) retorno).setNotas(NotasHH);
                         break;
 
@@ -1352,6 +1511,7 @@ public class DBManager extends SQLiteOpenHelper {
                         Cursor InsectGlaive = db.rawQuery("SELECT * FROM " + tipoArma + " WHERE " + tipoArma + "." + IDarmabase_COLUMN + " = " + id, null);
                         Log.d(LOGTAG, "InsectGlaive attributes: " + Arrays.toString(InsectGlaive.getColumnNames()));
                         Map<Integer, Integer> afiladoMapIG = new HashMap<>();
+                        Map<Integer, Integer> afiladomaxMapIG = new HashMap<>();
 
                         while (InsectGlaive.moveToNext()) {
                             for (int i = 0; i < InsectGlaive.getColumnCount(); i++) {
@@ -1374,6 +1534,24 @@ public class DBManager extends SQLiteOpenHelper {
                                     case AFILADOBLANCO_COLUMN:
                                         afiladoMapIG.put(Weapon.AFILADOBLANCO, InsectGlaive.getInt(i));
                                         break;
+                                    case AFILADOMAXROJO_COLUMN:
+                                        afiladomaxMapIG.put(Weapon.AFILADOROJO, InsectGlaive.getInt(i));
+                                        break;
+                                    case AFILADOMAXNARANJA_COLUMN:
+                                        afiladomaxMapIG.put(Weapon.AFILADONARANJA, InsectGlaive.getInt(i));
+                                        break;
+                                    case AFILADOMAXAMARILLO_COLUMN:
+                                        afiladomaxMapIG.put(Weapon.AFILADOAMARILLO, InsectGlaive.getInt(i));
+                                        break;
+                                    case AFILADOMAXVERDE_COLUMN:
+                                        afiladomaxMapIG.put(Weapon.AFILADOVERDE, InsectGlaive.getInt(i));
+                                        break;
+                                    case AFILADOMAXAZUL_COLUMN:
+                                        afiladomaxMapIG.put(Weapon.AFILADOAZUL, InsectGlaive.getInt(i));
+                                        break;
+                                    case AFILADOMAXBLANCO_COLUMN:
+                                        afiladomaxMapIG.put(Weapon.AFILADOBLANCO, InsectGlaive.getInt(i));
+                                        break;
                                     case BONUSINSECTO_COLUMN:
                                         ((InsectGlaive) retorno).setBonusInsecto(InsectGlaive.getString(i));
                                         break;
@@ -1382,6 +1560,7 @@ public class DBManager extends SQLiteOpenHelper {
                         }
 
                         ((InsectGlaive) retorno).setAfilado(afiladoMapIG);
+                        ((InsectGlaive) retorno).setAfiladoMax(afiladomaxMapIG);
                         break;
 
                     case LIGHTBOWGUN_TABLE:

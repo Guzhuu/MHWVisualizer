@@ -59,7 +59,8 @@ public class ResponseParser {
     public static final String IMGS = "assets";
     public static final String IMGS_ICON = "icon";
     public static final String IMGS_IMG = "image";
-    public static final String SHARPNESS = "sharpness";
+    public static final String DURABILITY = "durability"; // Indica sharpness en cierto modo, durability * 400 / 100 = sharpness
+    public static final String SHARPNESS = "sharpness"; // Despareció por durability, sharpness / 400 * 100 = durability
     public static final String SHARPNESS_RED = "red";
     public static final String SHARPNESS_ORANGE = "orange";
     public static final String SHARPNESS_YELLOW = "yellow";
@@ -265,35 +266,64 @@ public class ResponseParser {
         return gear;
     }
 
-    private Map<Integer, Integer> parseSharpness(JSONObject weapon){
-        Map<Integer, Integer> retorno = new HashMap<>();
+    private Map[] parseSharpness(JSONObject weapon){
+        Map<Integer, Integer> retornoBase = new HashMap<>();
+        Map<Integer, Integer> retornoMax = new HashMap<>();
         try {
-            if (weapon.has(SHARPNESS)) {
-                Log.d(LOG_TAG, "Cogiendo " + SHARPNESS + " de " + weapon.getInt(ID));
-                JSONObject sharpness = weapon.getJSONObject(SHARPNESS);
-                if(sharpness.has(SHARPNESS_RED)){
-                    retorno.put(Weapon.AFILADOROJO, sharpness.getInt(SHARPNESS_RED));
+            if (weapon.has(DURABILITY)) {
+                Log.d(LOG_TAG, "Cogiendo " + DURABILITY + " de " + weapon.getInt(ID));
+                JSONArray durability = weapon.getJSONArray(DURABILITY);
+                // Array de 6, 0 = base, 6 = max con sharpness
+                JSONObject afiladoBase;
+                JSONObject afiladoMax;
+                if(durability.length() >= 6){
+                    afiladoBase = durability.getJSONObject(0);
+                    afiladoMax = durability.getJSONObject(durability.length()-1);
+                }else{
+                    Log.e(LOG_TAG, "No hay afilado");
+                    return new Map[]{retornoBase, retornoMax};
                 }
-                if(sharpness.has(SHARPNESS_ORANGE)){
-                    retorno.put(Weapon.AFILADONARANJA, sharpness.getInt(SHARPNESS_ORANGE));
+                if(afiladoBase.has(SHARPNESS_RED)){
+                    retornoBase.put(Weapon.AFILADOROJO, durabilityToSharpness(afiladoBase.getInt(SHARPNESS_RED)));
                 }
-                if(sharpness.has(SHARPNESS_YELLOW)){
-                    retorno.put(Weapon.AFILADOAMARILLO, sharpness.getInt(SHARPNESS_YELLOW));
+                if(afiladoMax.has(SHARPNESS_RED)){
+                    retornoMax.put(Weapon.AFILADOROJO, durabilityToSharpness(afiladoMax.getInt(SHARPNESS_RED)));
                 }
-                if(sharpness.has(SHARPNESS_GREEN)){
-                    retorno.put(Weapon.AFILADOVERDE, sharpness.getInt(SHARPNESS_GREEN));
+                if(afiladoBase.has(SHARPNESS_ORANGE)){
+                    retornoBase.put(Weapon.AFILADONARANJA, durabilityToSharpness(afiladoBase.getInt(SHARPNESS_ORANGE)));
                 }
-                if(sharpness.has(SHARPNESS_BLUE)){
-                    retorno.put(Weapon.AFILADOAZUL, sharpness.getInt(SHARPNESS_BLUE));
+                if(afiladoMax.has(SHARPNESS_ORANGE)){
+                    retornoMax.put(Weapon.AFILADONARANJA, durabilityToSharpness(afiladoMax.getInt(SHARPNESS_ORANGE)));
                 }
-                if(sharpness.has(SHARPNESS_WHITE)){
-                    retorno.put(Weapon.AFILADOBLANCO, sharpness.getInt(SHARPNESS_WHITE));
+                if(afiladoBase.has(SHARPNESS_YELLOW)){
+                    retornoBase.put(Weapon.AFILADOAMARILLO, durabilityToSharpness(afiladoBase.getInt(SHARPNESS_YELLOW)));
+                }
+                if(afiladoMax.has(SHARPNESS_YELLOW)){
+                    retornoMax.put(Weapon.AFILADOAMARILLO, durabilityToSharpness(afiladoMax.getInt(SHARPNESS_YELLOW)));
+                }
+                if(afiladoBase.has(SHARPNESS_GREEN)){
+                    retornoBase.put(Weapon.AFILADOVERDE, durabilityToSharpness(afiladoBase.getInt(SHARPNESS_GREEN)));
+                }
+                if(afiladoMax.has(SHARPNESS_GREEN)){
+                    retornoMax.put(Weapon.AFILADOVERDE, durabilityToSharpness(afiladoMax.getInt(SHARPNESS_GREEN)));
+                }
+                if(afiladoBase.has(SHARPNESS_BLUE)){
+                    retornoBase.put(Weapon.AFILADOAZUL, durabilityToSharpness(afiladoBase.getInt(SHARPNESS_BLUE)));
+                }
+                if(afiladoMax.has(SHARPNESS_BLUE)){
+                    retornoMax.put(Weapon.AFILADOAZUL, durabilityToSharpness(afiladoMax.getInt(SHARPNESS_BLUE)));
+                }
+                if(afiladoBase.has(SHARPNESS_WHITE)){
+                    retornoBase.put(Weapon.AFILADOBLANCO, durabilityToSharpness(afiladoBase.getInt(SHARPNESS_WHITE)));
+                }
+                if(afiladoMax.has(SHARPNESS_WHITE)){
+                    retornoMax.put(Weapon.AFILADOBLANCO, durabilityToSharpness(afiladoMax.getInt(SHARPNESS_WHITE)));
                 }
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Fallo al parsear afilado " + e.toString());
         }
-        return retorno;
+        return new Map[]{retornoBase, retornoMax};
     }
 
     private Bow parseBow(JSONObject weapon) {
@@ -321,7 +351,13 @@ public class ResponseParser {
     private SwordandShield parseSnS(JSONObject weapon){
         SwordandShield gear = new SwordandShield(parseWeapon(weapon));
         try {
-                gear.setAfilado(parseSharpness(weapon));
+                Map[] afilados = parseSharpness(weapon);
+                if(afilados[0] != null){
+                    gear.setAfilado(afilados[0]);
+                }
+                if(afilados[1] != null){
+                    gear.setAfiladoMax(afilados[1]);
+                }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Fallo al parsear SwordandShield " + e.toString());
         }
@@ -331,7 +367,13 @@ public class ResponseParser {
     private ChargeBlade parseCB(JSONObject weapon){
         ChargeBlade gear = new ChargeBlade(parseWeapon(weapon));
         try {
-            gear.setAfilado(parseSharpness(weapon));
+            Map[] afilados = parseSharpness(weapon);
+            if(afilados[0] != null){
+                gear.setAfilado(afilados[0]);
+            }
+            if(afilados[1] != null){
+                gear.setAfiladoMax(afilados[1]);
+            }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Fallo al parsear SwordandShield " + e.toString());
         }
@@ -341,7 +383,13 @@ public class ResponseParser {
     private SwitchAxe parseSA(JSONObject weapon){
         SwitchAxe gear = new SwitchAxe(parseWeapon(weapon));
         try {
-            gear.setAfilado(parseSharpness(weapon));
+            Map[] afilados = parseSharpness(weapon);
+            if(afilados[0] != null){
+                gear.setAfilado(afilados[0]);
+            }
+            if(afilados[1] != null){
+                gear.setAfiladoMax(afilados[1]);
+            }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Fallo al parsear SwordandShield " + e.toString());
         }
@@ -351,7 +399,13 @@ public class ResponseParser {
     private LongSword parseLS(JSONObject weapon){
         LongSword gear = new LongSword(parseWeapon(weapon));
         try {
-            gear.setAfilado(parseSharpness(weapon));
+            Map[] afilados = parseSharpness(weapon);
+            if(afilados[0] != null){
+                gear.setAfilado(afilados[0]);
+            }
+            if(afilados[1] != null){
+                gear.setAfiladoMax(afilados[1]);
+            }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Fallo al parsear SwordandShield " + e.toString());
         }
@@ -361,7 +415,13 @@ public class ResponseParser {
     private GreatSword parseGS(JSONObject weapon){
         GreatSword gear = new GreatSword(parseWeapon(weapon));
         try {
-            gear.setAfilado(parseSharpness(weapon));
+            Map[] afilados = parseSharpness(weapon);
+            if(afilados[0] != null){
+                gear.setAfilado(afilados[0]);
+            }
+            if(afilados[1] != null){
+                gear.setAfiladoMax(afilados[1]);
+            }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Fallo al parsear SwordandShield " + e.toString());
         }
@@ -371,7 +431,13 @@ public class ResponseParser {
     private Lance parseL(JSONObject weapon){
         Lance gear = new Lance(parseWeapon(weapon));
         try {
-            gear.setAfilado(parseSharpness(weapon));
+            Map[] afilados = parseSharpness(weapon);
+            if(afilados[0] != null){
+                gear.setAfilado(afilados[0]);
+            }
+            if(afilados[1] != null){
+                gear.setAfiladoMax(afilados[1]);
+            }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Fallo al parsear SwordandShield " + e.toString());
         }
@@ -381,7 +447,13 @@ public class ResponseParser {
     private Hammer parseH(JSONObject weapon){
         Hammer gear = new Hammer(parseWeapon(weapon));
         try {
-            gear.setAfilado(parseSharpness(weapon));
+            Map[] afilados = parseSharpness(weapon);
+            if(afilados[0] != null){
+                gear.setAfilado(afilados[0]);
+            }
+            if(afilados[1] != null){
+                gear.setAfiladoMax(afilados[1]);
+            }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Fallo al parsear SwordandShield " + e.toString());
         }
@@ -391,7 +463,13 @@ public class ResponseParser {
     private GunLance parseGL(JSONObject weapon){
         GunLance gear = new GunLance(parseWeapon(weapon));
         try {
-            gear.setAfilado(parseSharpness(weapon));
+            Map[] afilados = parseSharpness(weapon);
+            if(afilados[0] != null){
+                gear.setAfilado(afilados[0]);
+            }
+            if(afilados[1] != null){
+                gear.setAfiladoMax(afilados[1]);
+            }
             if(weapon.has(ATTRIBUTES)){
                 Log.d(LOG_TAG, "Cogiendo " + ATTRIBUTES + " de " + weapon.getInt(ID));
                 JSONObject attrs = weapon.getJSONObject(ATTRIBUTES);
@@ -412,7 +490,13 @@ public class ResponseParser {
     private InsectGlaive parseIG(JSONObject weapon){
         InsectGlaive gear = new InsectGlaive(parseWeapon(weapon));
         try {
-            gear.setAfilado(parseSharpness(weapon));
+            Map[] afilados = parseSharpness(weapon);
+            if(afilados[0] != null){
+                gear.setAfilado(afilados[0]);
+            }
+            if(afilados[1] != null){
+                gear.setAfiladoMax(afilados[1]);
+            }
             if(weapon.has(ATTRIBUTES)){
                 Log.d(LOG_TAG, "Cogiendo " + ATTRIBUTES + " de " + weapon.getInt(ID));
                 JSONObject attrs = weapon.getJSONObject(ATTRIBUTES);
@@ -431,7 +515,13 @@ public class ResponseParser {
     private DualBlades parseDB(JSONObject weapon){
         DualBlades gear = new DualBlades(parseWeapon(weapon));
         try {
-            gear.setAfilado(parseSharpness(weapon));
+            Map[] afilados = parseSharpness(weapon);
+            if(afilados[0] != null){
+                gear.setAfilado(afilados[0]);
+            }
+            if(afilados[1] != null){
+                gear.setAfiladoMax(afilados[1]);
+            }
             if (weapon.has(ELEMENT) && weapon.getJSONArray(ELEMENT).length() >= 2) {
                 Log.d(LOG_TAG, "Cogiendo elemento secundario  de " + weapon.getInt(ID));
                 JSONArray array = weapon.getJSONArray(ELEMENT);
@@ -490,7 +580,13 @@ public class ResponseParser {
     private HuntingHorn parseHH(JSONObject weapon){
         HuntingHorn gear = new HuntingHorn(parseWeapon(weapon));
         try {
-            gear.setAfilado(parseSharpness(weapon));
+            Map[] afilados = parseSharpness(weapon);
+            if(afilados[0] != null){
+                gear.setAfilado(afilados[0]);
+            }
+            if(afilados[1] != null){
+                gear.setAfiladoMax(afilados[1]);
+            }
             if (weapon.has(ATTRIBUTES)) {
                 Log.d(LOG_TAG, "Cogiendo " + ATTRIBUTES + " de " + weapon.getInt(ID));
                 JSONObject attrs = weapon.getJSONObject(ATTRIBUTES);
@@ -511,5 +607,9 @@ public class ResponseParser {
             Log.e(LOG_TAG, "Fallo al parsear HuntingHorn " + e.toString());
         }
         return gear;
+    }
+
+    private int durabilityToSharpness(int durability){
+        return durability*100/400;
     }
 }

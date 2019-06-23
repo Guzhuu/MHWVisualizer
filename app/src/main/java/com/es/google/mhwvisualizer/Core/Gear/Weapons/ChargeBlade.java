@@ -9,6 +9,7 @@ import java.util.Map;
 public class ChargeBlade extends Weapon {
     //Cantidad de afilado para rojo-naranja-amarillo-verde-azul-blanco-morado sobre 100
     public Map<Integer, Integer> afilado;
+    public Map<Integer, Integer> afiladoMax;
 
     public ChargeBlade(){
         super();
@@ -40,5 +41,13 @@ public class ChargeBlade extends Weapon {
 
     public void setAfilado(Map<Integer, Integer> afilado){
         this.afilado = afilado;
+    }
+
+    public Map<Integer, Integer> getAfiladoMax(){
+        return this.afiladoMax;
+    }
+
+    public void setAfiladoMax(Map<Integer, Integer> afiladoMax){
+        this.afiladoMax = afiladoMax;
     }
 }
